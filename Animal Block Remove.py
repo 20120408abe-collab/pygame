@@ -1,5 +1,5 @@
 """
-どうぶつテトリス (Python + pygame)
+Animal Block Remove (Python + pygame)
 
 実行方法:
     pip install pygame
@@ -530,7 +530,7 @@ class App:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("どうぶつテトリス")
+        pygame.display.set_caption("Animal Block Remove")
         self.clock = pygame.time.Clock()
         pygame.key.set_repeat(170, 50)
 
@@ -538,7 +538,7 @@ class App:
         self.f_small = make_font(font_path, 16)
         self.f = make_font(font_path, 20)
         self.f_mid = make_font(font_path, 28)
-        self.f_big = make_font(font_path, 50)
+        self.f_big = make_font(font_path, 40)
         self.f_huge = make_font(font_path, 110)
 
         self.best = 0
@@ -660,8 +660,8 @@ class App:
         self.dim(150)
 
         cx = WIDTH // 2
-        self.text(self.f_big, "どうぶつテトリス", ACCENT, (cx, 70), center=True, shadow=True)
-        self.text(self.f, "ANIMAL TETRIS", SUB, (cx, 118), center=True)
+        self.text(self.f_big, "Animal Block Remove", ACCENT, (cx, 70), center=True, shadow=True)
+        self.text(self.f, "Animal Remove", SUB, (cx, 118), center=True)
 
         # 真ん中の大きな猫
         px = 9
@@ -716,10 +716,10 @@ class App:
             self.box(pygame.Rect(cx - 220, cy - 190, 440, 380))
             self.text(self.f_big, "スタート", ACCENT, (cx, cy - 140), center=True)
             lines = [
-                ("制限時間", "1分"),
+                ("制限時間", "2分"),
                 ("目標", "ラインを消そう"),
                 ("1列", f"{LINE_SCORES[1]}点"),
-                ("4列同時", f"{LINE_SCORES[4]}点！"),
+                ("3列同時", f"{LINE_SCORES[3]}点！"),
             ]
             for i, (a, b) in enumerate(lines):
                 y = cy - 70 + i * 42
