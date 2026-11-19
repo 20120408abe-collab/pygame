@@ -344,7 +344,7 @@ DIFFICULTY = {
     2: {"name": "ふつう", "color": (255, 210, 90), "desc": "ばくだんが落ちてくる！",
         "bomb_max": 1, "bomb_first": 6000, "bomb_interval": (3000, 6000)},
     3: {"name": "むずかしい", "color": (255, 90, 90), "desc": "ばくだんがたくさん！",
-        "bomb_max": 3, "bomb_first": 3000, "bomb_interval": (1500, 3500)},
+        "bomb_max": 2, "bomb_first": 2000, "bomb_interval": (2000, 4000)},
     # 鬼: 爆弾はレベル3と同じ。かわりに時間が速くへるので、時間アイテムをどう取るかが大事
     4: {"name": "鬼", "color": (200, 110, 255), "desc": "時間が1.5倍の速さでへる！",
         "bomb_max": 3, "bomb_first": 3000, "bomb_interval": (1500, 3500),
