@@ -34,14 +34,15 @@ Animal Block Remove (Python + pygame)
     爆弾の数や減点は DIFFICULTY と BOMB_PENALTY で変えられます。
 
 点数:
+    のこり1分と30秒になると、ステージの左上に「あと1分！」「あと30秒！」と出ます。
     1列 100点 (2列 300・3列 500・4列 800) × スピード
     2列いじょういっしょに消すと、さらにボーナス (2列 +300・3列 +800・4列 +1500)
     十字そろい 1000点
 
 ランキング:
     レベルごとに10位まで、ゲームと同じフォルダの ranking.json に保存されます。
-    ランクインすると名前を入れられます。キーボードで打っても (日本語入力もOK)、
-    矢印と ENTER で文字ばんからえらんでも入れられます。
+    ランクインすると、名前をキーボードで入れられます (日本語入力もOK)。
+    ランキング画面では ← → でレベル1〜4のランキングを切りかえて見られます。
     タイトルの「データリセット」で、鬼レベルのロックやランキングをもとにもどせます。
 
 とくしゅアイテム (ゲーム中に上から落ちてくるキャラクター):
@@ -98,6 +99,9 @@ HEIGHT = ROWS * CELL
 FPS = 60
 
 TIME_LIMIT_MS = 120 * 1000    # 制限時間 (1人2分)
+# のこり時間がこれを切ったときに、ステージの左上に知らせる (ミリ秒, 表示する文字)
+TIME_CALLS = [(60 * 1000, "あと1分！"), (30 * 1000, "あと30秒！")]
+TIME_CALL_MS = 2600           # 知らせを出しておく時間
 
 BG = (18, 18, 28)
 GRID = (40, 40, 55)
@@ -942,17 +946,8 @@ class Ranking:
         return rank
 
 
-# 名前入力の文字ばん (キーボードを使わず、矢印と ENTER だけで入れられる)
-NAME_HIRA = ["あいうえおかきくけこ", "さしすせそたちつてと", "なにぬねのはひふへほ",
-             "まみむめもやゆよらり", "るれろわをんっー゛゜", "ゃゅょぁぃぅぇぉ！？"]
-NAME_KATA = ["".join(chr(ord(c) + 0x60) if "ぁ" <= c <= "ゖ" else c for c in row) for row in NAME_HIRA]
-NAME_ABC = ["ABCDEFGHIJ", "KLMNOPQRST", "UVWXYZ0123", "456789!?-."]
-NAME_MODES = [("ひらがな", NAME_HIRA), ("カタカナ", NAME_KATA), ("ABC", NAME_ABC)]
+# 名前入力のボタン (名前はキーボードで打つ)
 NAME_BUTTONS = ["けす", "けってい"]
-# 「゛」「゜」で、前の文字をにごった音にする
-DAKUTEN = dict(zip("かきくけこさしすせそたちつてとはひふへほうカキクケコサシスセソタチツテトハヒフヘホウ",
-                   "がぎぐげござじずぜぞだぢづでどばびぶべぼゔガギグゲゴザジズゼゾダヂヅデドバビブベボヴ"))
-HANDAKUTEN = dict(zip("はひふへほハヒフヘホ", "ぱぴぷぺぽパピプペポ"))
 
 
 # ================= 効果音・BGM =================
@@ -1042,6 +1037,9 @@ class SoundBox:
               sq, 0.18),
             w([("C4", 480), ("C5", 420)], tri, 0.35))
         self.sounds["bonus_end"] = self._make(w([("G5", 100), ("E5", 100), ("C5", 280)], sq, 0.18))
+        # 「あと1分」「あと30秒」の知らせ: ピピッ
+        self.sounds["call"] = self._make(
+            w([("A5", 90), (None, 50), ("A5", 90), (None, 50), ("E6", 200)], sq, 0.18))
         # 爆弾: 出てきたときの「ブッブー」という注意の音と、ドカーンという爆発の音
         self.sounds["bomb_appear"] = self._make(w([("A3", 90), (None, 40), ("A3", 90)], sq, 0.16))
         self.sounds["bomb"] = self._make(self._noise(650, 0.9), w([("C3", 120), ("G2", 260)], tri, 0.5))
@@ -2055,6 +2053,7 @@ class App:
             self.bombs = None
         self.bomb_hits = 0
         self.bombs_dodged = 0
+        self.time_call = None       # 「あと1分」などの知らせ (表示中のとき)
         self.reset_play_effects()
         self.ready_phase = "count" if skip_info else "info"
         self.count_ms = 3000
@@ -2139,7 +2138,9 @@ class App:
                 if self.bgm_delay <= 0 and g.bonus_ms > 0:
                     self.sound.start_bgm()
         in_bonus = g.bonus_ms > 0
+        before = g.time_left
         g.update(dt)
+        self.update_time_call(before, g.time_left, dt)
         if in_bonus and g.bonus_ms <= 0:    # ボーナスタイムがおわった
             self.sound.stop_bgm()
             self.sound.play("bonus_end")
@@ -2150,6 +2151,42 @@ class App:
         if g.finished:
             self.sound.stop_bgm()
             self.finish_game()
+
+    def update_time_call(self, before, after, dt):
+        """のこり時間が TIME_CALLS の時間を切った瞬間に「あと1分！」などを出す。
+        時間アイテムで1分より多くもどってから、また切ったときも知らせる"""
+        if self.time_call:
+            self.time_call["ms"] += dt
+            if self.time_call["ms"] >= TIME_CALL_MS:
+                self.time_call = None
+        if before is None or after is None:
+            return
+        for limit, text in TIME_CALLS:
+            if before > limit >= after:
+                self.time_call = {"text": text, "limit": limit, "ms": 0}
+                self.sound.play("call")
+
+    def draw_time_call(self):
+        """ステージの左上に「あと1分！」「あと30秒！」"""
+        c = getattr(self, "time_call", None)
+        if not c:
+            return
+        ms = c["ms"]
+        color = WARN if c["limit"] <= 30 * 1000 else ACCENT
+        img = self.f_big.render(c["text"], True, color)
+        box = pygame.Rect(0, 0, img.get_width() + 32, img.get_height() + 16)
+        slide = min(1.0, ms / 180)                      # 左からすべりこむ
+        box.topleft = (int(-box.width + (box.width + 10) * slide), 84)
+        fade = 1.0 if ms < TIME_CALL_MS - 400 else max(0.0, (TIME_CALL_MS - ms) / 400)
+        layer = pygame.Surface(box.size, pygame.SRCALPHA)
+        pygame.draw.rect(layer, (12, 12, 20, 210), layer.get_rect(), border_radius=12)
+        blink = (ms // 250) % 2 == 0 or ms > 1000       # 最初の1秒はチカチカ
+        pygame.draw.rect(layer, (*color, 255 if blink else 90), layer.get_rect(), 3, border_radius=12)
+        layer.blit(img, (16, 8))
+        layer.set_alpha(int(255 * fade))
+        self.screen.set_clip(pygame.Rect(0, 0, BOARD_W, HEIGHT))
+        self.screen.blit(layer, box.topleft)
+        self.screen.set_clip(None)
 
     def draw_side_play(self):
         g = self.game
@@ -2212,6 +2249,7 @@ class App:
         self.draw_side_play()
         self.draw_effects()
         self.draw_particles()
+        self.draw_time_call()
         self.draw_collapse()
         if self.game.paused:
             self.dim(160, pygame.Rect(0, 0, BOARD_W, HEIGHT))
@@ -2293,9 +2331,7 @@ class App:
     def go_name(self):
         self.state = "name"
         self.name = ""
-        self.name_mode = 0
-        self.name_row = 1           # 0 = 文字のしゅるい, 1〜 = 文字ばん, 最後 = けす/けってい
-        self.name_col = 0
+        self.name_btn = 1           # えらんでいるボタン (0 = けす, 1 = けってい)
         self.ime_text = ""          # 日本語入力で変換している途中の文字
         self.last_text_ms = -10**6  # 最後にキーボードから文字が入った時刻
         self.start_ime()
@@ -2314,20 +2350,8 @@ class App:
         self.name += text[:room]
         self.sound.play("click")
 
-    def name_rows(self):
-        """いまの画面の行 (行ごとにえらべるものの数がちがう)"""
-        grid = NAME_MODES[self.name_mode][1]
-        return [[m for m, _ in NAME_MODES]] + [list(r) for r in grid] + [NAME_BUTTONS]
-
     def name_add(self, ch):
-        if ch == "゛" or ch == "゜":           # 前の文字をにごらせる
-            table = DAKUTEN if ch == "゛" else HANDAKUTEN
-            if self.name and self.name[-1] in table:
-                self.name = self.name[:-1] + table[self.name[-1]]
-                self.sound.play("click")
-            else:
-                self.sound.play("buzz")
-            return
+        """文字を1つ足す (キーボードの文字入力が使えないパソコン用)"""
         if len(self.name) >= NAME_MAX:
             self.sound.play("buzz")
             return
@@ -2343,37 +2367,20 @@ class App:
         self.go_ranking(self.difficulty, highlight=rank, after_game=True)
 
     def key_name(self, key):
-        rows = self.name_rows()
         # 日本語入力で変換している途中のキー (矢印・ENTER・けす) は、日本語入力にまかせる
         if self.ime_text:
             return
-        # 変換を決めた ENTER が、文字ばんの ENTER にもなってしまわないようにする
+        # 変換を決めた ENTER が、ボタンの ENTER にもなってしまわないようにする
         if key == pygame.K_RETURN and pygame.time.get_ticks() - self.last_text_ms < 200:
             return
-        if key in (pygame.K_UP, pygame.K_DOWN):
-            old = len(rows[self.name_row])
-            self.name_row = (self.name_row + (1 if key == pygame.K_DOWN else -1)) % len(rows)
-            new = len(rows[self.name_row])
-            # 行の長さがちがうときは、だいたい同じ位置に合わせる
-            if old != new:
-                self.name_col = round(self.name_col * (new - 1) / max(1, old - 1))
-            self.name_col = min(self.name_col, new - 1)
-        elif key in (pygame.K_LEFT, pygame.K_RIGHT):
-            n = len(rows[self.name_row])
-            self.name_col = (self.name_col + (1 if key == pygame.K_RIGHT else -1)) % n
+        if key in (pygame.K_LEFT, pygame.K_RIGHT):      # 「けす」と「けってい」を切りかえ
+            self.name_btn = 1 - self.name_btn
         elif key == pygame.K_RETURN:
-            item = rows[self.name_row][self.name_col]
-            if self.name_row == 0:                      # 文字のしゅるいを切りかえ
-                self.name_mode = self.name_col
+            if NAME_BUTTONS[self.name_btn] == "けす":
+                self.name = self.name[:-1]
                 self.sound.play("click")
-            elif self.name_row == len(rows) - 1:        # けす / けってい
-                if item == "けす":
-                    self.name = self.name[:-1]
-                    self.sound.play("click")
-                else:
-                    self.name_done()
             else:
-                self.name_add(item)
+                self.name_done()
         elif key == pygame.K_BACKSPACE:
             self.name = self.name[:-1]
         elif key == pygame.K_ESCAPE:
@@ -2393,13 +2400,14 @@ class App:
         cx = WIDTH // 2
         t = pygame.time.get_ticks()
         d = DIFFICULTY[self.difficulty]
-        self.text(self.f_big, f"ランクイン！ {self.rank_place}位", ACCENT, (cx, 34), center=True, shadow=True)
+        self.text(self.f_big, f"ランクイン！ {self.rank_place}位", ACCENT, (cx, 120), center=True, shadow=True)
         self.text(self.f, f"レベル{self.difficulty} {d['name']}   スコア {self.game.score}", d["color"],
-                  (cx, 74), center=True)
+                  (cx, 168), center=True)
+        self.text(self.f, "名前をキーボードで入れてね", TEXT, (cx, 232), center=True)
         # 名前の欄
-        box = pygame.Rect(cx - 150, 96, 300, 48)
-        pygame.draw.rect(self.screen, (30, 30, 48), box, border_radius=10)
-        pygame.draw.rect(self.screen, ACCENT, box, 2, border_radius=10)
+        box = pygame.Rect(cx - 170, 258, 340, 60)
+        pygame.draw.rect(self.screen, (30, 30, 48), box, border_radius=12)
+        pygame.draw.rect(self.screen, ACCENT, box, 3, border_radius=12)
         # 決まった文字 + 変換中の文字 (下線つき) + カーソル
         done = self.f_mid.render(self.name, True, TEXT)
         editing = self.f_mid.render(self.ime_text, True, ACCENT)
@@ -2416,47 +2424,19 @@ class App:
                              (x + editing.get_width(), y + editing.get_height() - 4), 2)
             x += editing.get_width()
         self.screen.blit(cur, (x, y))
-        self.text(self.f_small, f"{len(self.name)}/{NAME_MAX}", SUB, (box.right + 8, box.y + 16))
+        self.text(self.f_small, f"{len(self.name)}/{NAME_MAX}", SUB, (box.right + 8, box.centery - 10))
 
-        rows = self.name_rows()
-        # 文字のしゅるい
-        for i, label in enumerate(rows[0]):
-            r = pygame.Rect(0, 0, 130, 34)
-            r.center = (cx - 145 + i * 145, 172)
-            on = i == self.name_mode
-            pygame.draw.rect(self.screen, (60, 55, 30) if on else (30, 30, 48), r, border_radius=8)
-            if self.name_row == 0 and self.name_col == i:
-                pygame.draw.rect(self.screen, ACCENT, r, 3, border_radius=8)
-            self.text(self.f, label, ACCENT if on else SUB, r.center, center=True)
-        # 文字ばん
-        cw, ch = 46, 44
-        left = cx - 5 * cw
-        for ri, row in enumerate(rows[1:-1]):
-            for ci, c in enumerate(row):
-                r = pygame.Rect(left + ci * cw + 2, 200 + ri * ch + 2, cw - 4, ch - 4)
-                sel = self.name_row == ri + 1 and self.name_col == ci
-                pygame.draw.rect(self.screen, (70, 62, 30) if sel else (32, 32, 50), r, border_radius=6)
-                if sel:
-                    pygame.draw.rect(self.screen, ACCENT, r, 3, border_radius=6)
-                if c in "゛゜":      # にごりの点は字のすみにかかれるので、絵のまん中で合わせる
-                    img = self.f_big.render(c, True, ACCENT)
-                    bb = img.get_bounding_rect()
-                    self.screen.blit(img, (r.centerx - bb.centerx, r.centery - bb.centery))
-                else:
-                    self.text(self.f_mid, c, TEXT, r.center, center=True)
         # けす / けってい
-        by = 200 + 6 * ch + 22
-        for i, label in enumerate(rows[-1]):
-            r = pygame.Rect(0, 0, 150, 40)
-            r.center = (cx - 90 + i * 180, by)
-            sel = self.name_row == len(rows) - 1 and self.name_col == i
+        for i, label in enumerate(NAME_BUTTONS):
+            r = pygame.Rect(0, 0, 150, 46)
+            r.center = (cx - 90 + i * 180, 372)
+            sel = self.name_btn == i
             base = GOOD if label == "けってい" else SUB
             pygame.draw.rect(self.screen, (40, 60, 40) if label == "けってい" else (40, 40, 55), r,
                              border_radius=10)
             pygame.draw.rect(self.screen, ACCENT if sel else base, r, 3 if sel else 2, border_radius=10)
             self.text(self.f_mid, label, base, r.center, center=True)
-        self.text_with_enter(self.f_small, "矢印でえらぶ ／ ENTER", " で入れる", SUB, (cx, 568))
-        self.text(self.f_small, "キーボードで打ってもOK（日本語入力も使えるよ）", SUB, (cx, 590), center=True)
+        self.text_with_enter(self.f_small, "← → でえらぶ ／ ENTER", " で決定", SUB, (cx, 560))
 
     # ==================================================
     # データリセット (保存してあるデータをけす)
@@ -2561,16 +2541,16 @@ class App:
             self.sound.play("rankin")
 
     def key_ranking(self, key):
-        if self.rank_after_game:
-            if key in (pygame.K_SPACE, pygame.K_RETURN):
-                self.go_ready(skip_info=True)       # 同じレベルでもう一度
-            elif key == pygame.K_ESCAPE:
-                self.go_title()
-            return
         levels = self.available_levels()
-        if key in (pygame.K_LEFT, pygame.K_RIGHT):
+        if key in (pygame.K_LEFT, pygame.K_RIGHT):      # ← → でレベル1から順に切りかえ
             i = levels.index(self.rank_level) if self.rank_level in levels else 0
             self.rank_level = levels[(i + (1 if key == pygame.K_RIGHT else -1)) % len(levels)]
+            self.sound.play("click")
+        elif self.rank_after_game:
+            if key in (pygame.K_SPACE, pygame.K_RETURN):
+                self.go_ready(skip_info=True)       # 遊んだレベルでもう一度
+            elif key == pygame.K_ESCAPE:
+                self.go_title()
         elif key in (pygame.K_ESCAPE, pygame.K_SPACE, pygame.K_RETURN):
             self.go_title()
 
@@ -2587,16 +2567,15 @@ class App:
         self.text(self.f_big, "ランキング", ACCENT, (cx, 40), center=True, shadow=True)
         # レベルのタブ
         levels = self.available_levels()
-        tab_w = min(150, (WIDTH - 24) // len(levels))
+        tab_w = min(150, (WIDTH - 70) // len(levels))      # 左右に ◀ ▶ を出すすき間をあける
         x0 = cx - tab_w * len(levels) // 2
+        short = any(self.f_small.size(f"レベル{lv} {DIFFICULTY[lv]['name']}")[0] > tab_w - 14 for lv in levels)
         for i, lv in enumerate(levels):
             d = DIFFICULTY[lv]
             r = pygame.Rect(x0 + i * tab_w + 3, 76, tab_w - 6, 34)
             on = lv == self.rank_level
             pygame.draw.rect(self.screen, d["color"] if on else (30, 30, 48), r, border_radius=8)
-            label = f"レベル{lv} {d['name']}"
-            if self.f_small.size(label)[0] > r.width - 8:       # 入らないときは短く
-                label = f"Lv{lv} {d['name']}"
+            label = f"{'Lv' if short else 'レベル'}{lv} {d['name']}"   # 1つでも入らなければ全部短く
             self.text(self.f_small, label, BG if on else SUB, r.center, center=True)
         rows = self.ranking.lists[self.rank_level]
         if not rows:
@@ -2606,7 +2585,8 @@ class App:
             y = 128 + i * 40
             r = pygame.Rect(cx - 220, y, 440, 36)
             if i < len(rows):
-                hl = self.rank_highlight == i + 1
+                # 光らせるのは、いま入ったレベルのランキングを見ているときだけ
+                hl = self.rank_highlight == i + 1 and self.rank_level == self.difficulty
                 if hl:                      # いま入った順位は虹色に光る
                     pygame.draw.rect(self.screen, rainbow_color(t, 0, 60, 45), r, border_radius=8)
                     pygame.draw.rect(self.screen, rainbow_color(t), r, 2, border_radius=8)
@@ -2618,9 +2598,13 @@ class App:
                 self.screen.blit(name, name.get_rect(midleft=(r.x + 80, r.centery)))
                 score = self.f_mid.render(str(rows[i]["score"]), True, color)
                 self.screen.blit(score, score.get_rect(midright=(r.right - 16, r.centery)))
+        # タブの左右に ◀ ▶ (← → で切りかえられることを見せる)
+        self.text(self.f_mid, "◀", SUB, (x0 - 14, 93), center=True)
+        self.text(self.f_mid, "▶", SUB, (x0 + tab_w * len(levels) + 14, 93), center=True)
         if self.rank_after_game:
-            self.text(self.f, "SPACE ：同じレベルでもう一度 ／ ESC ：タイトルへ", GOOD, (cx, 548),
-                      center=True)
+            self.text(self.f_small, "← → でレベルをかえる", SUB, (cx, 540), center=True)
+            self.text(self.f, f"SPACE ：レベル{self.difficulty}でもう一度 ／ ESC ：タイトルへ", GOOD,
+                      (cx, 566), center=True)
         else:
             self.text(self.f_small, "← → でレベルをかえる ／ ESC でもどる", SUB, (cx, 548), center=True)
         if not self.ranking_saved_ok():
