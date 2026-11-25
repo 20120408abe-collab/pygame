@@ -11,23 +11,33 @@ Animal Block Remove (Python + pygame)
     タイトル → チュートリアル(操作を1つずつ練習)
     タイトル → ランキング
 
-ゲーム中の操作 (使うキーをしぼっています):
-    ← →      : 左右移動 (押しっぱなしで続けて動く)
-    ↑        : 回転
-    ↓        : はやく落とす (押しっぱなしで続けて落ちる)
-    ↓↓       : すばやく2回押すと一気に落とす (ハードドロップ)
-               3回にしたいときは HARD_DROP_TAPS = 3 にする
-    Space    : ホールド
+ゲーム中の操作 (矢印キーのかわりに、左手の A D W S X C でも遊べます):
+    ← → / A D  : 左右移動 (押しっぱなしで続けて動く)
+    ↑ / W X    : 回転
+    ↓ / S      : はやく落とす (押しっぱなしで続けて落ちる)
+    ↓↓ / SS    : すばやく2回押すと一気に落とす (ハードドロップ)
+                 3回にしたいときは HARD_DROP_TAPS = 3 にする
+    Space / C  : ホールド
+    (キーの割り当ては KEY_ACTIONS で変えられます)
     P        : 一時停止
     Esc      : タイトルにもどる
+
+マウス:
+    メニュー・ボタン・ランキングのタブなどは、マウスでクリックしても選べます
+    (マウスをのせるとカーソルが動き、クリックで決定)。ゲーム中は「P ：一時停止」をクリックで一時停止。
 
 レベル (ゲームスタートのあとにえらぶ):
     レベル1 かんたん   : いつものルール
     レベル2 ふつう     : ばくだんが落ちてくる (動かしているブロックにあたると減点)
-    レベル3 むずかしい : ばくだんがレベル2よりたくさん落ちてくる
-    レベル4 鬼         : レベル3で ONI_UNLOCK_SCORE 点 (5000点) 以上とると遊べる。
-                         ばくだんはレベル3と同じで、のこり時間が1.5倍の速さでへる
-                         (時間アイテムをどう取るかが大事)
+    レベル3 むずかしい : ばくだんがレベル2よりたくさん落ちてくる。
+                         ボーナス中もブロックはふつうの形
+    レベル4 鬼         : レベル3で ONI_UNLOCK_SCORE 点 (20000点) 以上とると遊べる。
+                         のこり時間が1.5倍の速さでへり、ばくだんは数が多くて落ちるのも速い。
+                         ボーナス (虹色) は、のこり1分を切ってからランダムなときに落ちてくる。
+                         ボーナスは30秒で、その間もブロックはふつうの形。
+    ボーナス中は、どのレベルでもつぎのボーナス (虹色) は落ちてこない。
+    レベル2〜4 は、ボーナス中とボーナスのあとしばらく (40〜70秒のどこか。毎回ランダム) は
+    つぎのボーナス (虹色) が落ちてこない。ボーナス中は ばくだんストップ (緑) も落ちてこない
     ばくだんは上から5行目 (BOMB_START_ROW) に「！」で知らせてからあらわれます。
     あらわれた直後 (火がついていない間) はあたっても効きません。
     積み終わったブロックや床に落ちても何も起きません。
@@ -37,11 +47,13 @@ Animal Block Remove (Python + pygame)
     のこり1分と30秒になると、ステージの左上に「あと1分！」「あと30秒！」と出ます。
     1列 100点 (2列 300・3列 500・4列 800) × スピード
     2列いじょういっしょに消すと、さらにボーナス (2列 +300・3列 +800・4列 +1500)
-    十字そろい 1000点
+    十字そろい 1000点 (同じ動物で ＋ の形。ななめにも同じ動物があるかたまりは十字にしない。
+                       いま置いたブロックが入っている十字だけ数える)
 
 ランキング:
     レベルごとに10位まで、ゲームと同じフォルダの ranking.json に保存されます。
-    ランクインすると、名前をキーボードで入れられます (日本語入力もOK)。
+    ランクインすると、名前をキーボードで入れられます。
+    ひらがな・カタカナ・漢字変換もOK (ふだん使っている日本語入力をオンにして打つ)。
     ランキング画面では ← → でレベル1〜4のランキングを切りかえて見られます。
     タイトルの「データリセット」で、鬼レベルのロックやランキングをもとにもどせます。
 
@@ -53,10 +65,10 @@ Animal Block Remove (Python + pygame)
         黄色   : のこり時間 +10秒
         青     : のこり時間 +20秒
         緑     : ばくだんストップ (15秒間 爆弾が消える。爆弾が出るレベルだけ)
-        虹色   : ボーナスタイム 1分 (その間のこり時間がへらない。爆弾も落ちてこない。
-                 ブロックが3つ・1つの小さいブロックになる。動物は3しゅるい)
+        虹色   : ボーナスタイム 1分 (キャラはロボット。その間のこり時間がへらない。爆弾も落ちてこない。
+                 レベル1・2 はブロックが3つ・1つの小さいブロックになる。動物は3しゅるい)
     キャラクターの絵・効果音・BGM はすべてこのプログラムの中で作っているので、
-    著作権の心配はありません。
+    著作権の心配はありません (assets フォルダに入れた画像はのぞく)。
 
 画像を使う場合 (なくても動きます):
     このファイルと同じ場所に「assets」フォルダを作り、次の名前で画像を入れてください。
@@ -71,6 +83,8 @@ Animal Block Remove (Python + pygame)
         assets/dog.png        いぬ   (L)
         assets/title_bg.png   タイトル画面の背景
         assets/title_cat.png  タイトル画面・チュートリアル最後の大きな絵
+        assets/bonus_chara.png  ボーナスタイム (虹色アイテム) のロボット
+                                (ないときはロボットのドット絵になります)
 
     ブロックは 30×30 ピクセルに縮小されるので、
     背景が透明で輪郭のはっきりした PNG がおすすめです。
@@ -137,6 +151,7 @@ IMAGE_FILES = {
 }
 TITLE_BG_FILE = "title_bg.png"
 TITLE_CAT_FILE = "title_cat.png"
+BONUS_CHARA_FILE = "bonus_chara.png"    # ボーナスタイム (虹色アイテム) のロボット
 
 # ================= ドット絵 =================
 # B=体の色  k=黒  w=白  p=ピンク  n=濃いピンク  o=オレンジ  m=薄い茶  .=背景
@@ -286,6 +301,26 @@ TAP_WINDOW_MS = 300     # 「すばやく」とみなす時間 (この時間内�
 REPEAT_DELAY_MS = 170   # 押しっぱなしにしたとき、くり返しが始まるまでの時間
 REPEAT_RATE_MS = 50     # 押しっぱなしのくり返しの間隔
 
+# キーと操作の対応。矢印キー・SPACE に加えて、左手だけでも遊べるように
+# A D (いどう)・W X (かいてん)・S (はやく落とす / SS で一気に落とす)・C (ホールド) も使える
+KEY_ACTIONS = {
+    pygame.K_LEFT: "left",    pygame.K_a: "left",
+    pygame.K_RIGHT: "right",  pygame.K_d: "right",
+    pygame.K_UP: "rotate",    pygame.K_w: "rotate", pygame.K_x: "rotate",
+    pygame.K_DOWN: "down",    pygame.K_s: "down",
+    pygame.K_SPACE: "hold",   pygame.K_c: "hold",
+}
+# 画面に出す操作説明 (ゲーム中の右パネル)
+HELP_LINES = [
+    "← → / A D ：いどう",
+    "↑ / W X ：かいてん",
+    "↓ / S ：はやく落とす",
+    "↓" * HARD_DROP_TAPS + " / " + "S" * HARD_DROP_TAPS + " ：一気に落とす",
+    "SPACE / C ：ホールド",
+    "P ：一時停止",
+    "ESC ：タイトルへ",
+]
+
 # ================= とくしゅアイテム (落ちてくるキャラクター) =================
 ITEM_SCORE = 500                    # グレー: スコアボーナスの点数
 BONUS_MS = 60 * 1000                # 虹色: ボーナスタイム (のこり時間がへらない) の長さ
@@ -329,29 +364,62 @@ ITEM_ART = [
     "............",
 ]
 
+# ボーナスタイム (虹色アイテム) のキャラクター: ロボット
+# assets/bonus_chara.png があればその画像を、なければこのドット絵を使う
+# B=体の色  k=黒  w=白  d=こげ茶  y=黄緑
+ROBOT_ART = [
+    ".BBB....BBB.",
+    ".wkw....wkw.",
+    ".www.kk.www.",
+    ".....kk.....",
+    "..BBBBBBBB..",
+    "..BBddyyBB..",
+    ".BBBddyyBBB.",
+    "B.BByyddBB.B",
+    "B.BByyddBB.B",
+    "B.BBBBBBBB.B",
+    "B..........B",
+    "BB........BB",
+]
+ROBOT_PALETTE = {"B": (60, 165, 180), "k": (35, 30, 30), "w": (255, 255, 255),
+                 "d": (70, 50, 30), "y": (190, 195, 45)}
+
 # ================= 難易度 (レベル1〜4) =================
 BOMB_PENALTY = 300      # 爆弾が動かしているブロックにあたったときに減る点数 (ふつうのとき)
 BOMB_WARN_MS = 1000     # 爆弾が出てくる前に「！」で知らせる時間
 BOMB_START_ROW = 5      # 爆弾は上から何行目にあらわれるか (1〜4行目には出てこない)
 BOMB_START_Y = (BOMB_START_ROW - 1) * CELL
 BOMB_ARM_Y = BOMB_START_Y + CELL    # ここより下に来てから効くようになる (あらわれた直後は効かない)
-ONI_UNLOCK_SCORE = 5000  # レベル3でこの点数以上を取ると、鬼レベルがあそべるようになる
+ONI_UNLOCK_SCORE = 20000  # レベル3でこの点数以上を取ると、鬼レベルがあそべるようになる
 
 # bomb_first: ゲーム開始から最初の爆弾まで (ミリ秒)
 # bomb_interval: つぎの爆弾までの間隔 (この間でランダム)
 # bomb_max: 同時に落ちてくる爆弾の数の上限 (0 なら爆弾なし)
 # time_scale: のこり時間のへる速さ (1.5 なら1.5倍の速さでへる。2分が80秒でおわる)
 # locked: 最初はえらべない (ONI_UNLOCK_SCORE でかいほう)
+# bomb_speed: 爆弾の落ちる速さ (ピクセル/秒。書かなければ ITEM_SPEED と同じ)
+# bonus_small: False にすると、ボーナス中もブロックはふつうの形のまま
+# bonus_cooldown: (いちばん短い, いちばん長い)。ボーナスがおわってから、つぎの虹色 (ボーナス) が
+#                 落ちてくるまでの時間。この間でランダムに決まる。ボーナス中も虹色は落ちてこない
+# bonus_ms: ボーナスタイムの長さ (書かなければ BONUS_MS と同じ1分)
+# bonus_after: のこり時間がこれを切るまで虹色は落ちてこない。
+#              切ったあと、ランダムなときに1回かならず虹色が落ちてくる
 DIFFICULTY = {
     1: {"name": "かんたん", "color": (120, 230, 120), "desc": "いつものルール",
         "bomb_max": 0},
     2: {"name": "ふつう", "color": (255, 210, 90), "desc": "ばくだんが落ちてくる！",
-        "bomb_max": 1, "bomb_first": 6000, "bomb_interval": (3000, 6000)},
+        "bomb_max": 1, "bomb_first": 6000, "bomb_interval": (3000, 6000),
+        "bonus_cooldown": (40 * 1000, 70 * 1000)},
     3: {"name": "むずかしい", "color": (255, 90, 90), "desc": "ばくだんがたくさん！",
-        "bomb_max": 2, "bomb_first": 2000, "bomb_interval": (2000, 4000)},
-    # 鬼: 爆弾はレベル3と同じ。かわりに時間が速くへるので、時間アイテムをどう取るかが大事
-    4: {"name": "鬼", "color": (200, 110, 255), "desc": "時間が1.5倍の速さでへる！",
-        "bomb_max": 3, "bomb_first": 3000, "bomb_interval": (1500, 3500),
+        "bomb_max": 2, "bomb_first": 2000, "bomb_interval": (2000, 4000),
+        "bonus_small": False, "bonus_cooldown": (40 * 1000, 70 * 1000)},
+    # 鬼: 時間が1.5倍の速さでへる。爆弾は数が多く、落ちるのも速い。
+    #     ボーナスで点が取れすぎないように、ボーナス中もブロックはふつうの形で、
+    #     ボーナスがおわったら、しばらく虹色 (ボーナス) は落ちてこない
+    4: {"name": "鬼", "color": (200, 110, 255), "desc": "時間1.5倍速＆ばくだんが速い！",
+        "bomb_max": 3, "bomb_first": 3000, "bomb_interval": (1500, 3500), "bomb_speed": 120,
+        "bonus_small": False, "bonus_cooldown": (40 * 1000, 70 * 1000),
+        "bonus_ms": 30 * 1000, "bonus_after": 60 * 1000,
         "time_scale": 1.5, "locked": True},
 }
 
@@ -451,8 +519,10 @@ class Bag:
 
 
 class Tetris:
-    def __init__(self, time_limit=None, gravity_ms=None, speed_up=0, time_scale=1.0):
+    def __init__(self, time_limit=None, gravity_ms=None, speed_up=0, time_scale=1.0,
+                 bonus_small=True):
         self.time_limit = time_limit    # None なら時間無制限 (チュートリアル用)
+        self.bonus_small = bonus_small  # False ならボーナス中もふつうの形のブロック (レベル3・鬼)
         self.gravity_ms = gravity_ms    # None ならレベルに応じた速さ
         self.speed_up = speed_up        # はじめから速くする段階 (いまは使っていない)
         self.time_scale = time_scale    # 鬼レベル用: のこり時間のへる速さ
@@ -516,7 +586,7 @@ class Tetris:
 
     def start_bonus(self, ms):
         """ボーナスタイムを始める (ボーナス中ならのこり時間をもどす)"""
-        if self.bonus_ms <= 0:
+        if self.bonus_ms <= 0 and self.bonus_small:
             # ボーナス中に出てくる動物をえらぶ (少なめにしておくと十字が作りやすい)
             self.bonus_animals = random.sample(KINDS, BONUS_ANIMALS)
             self.bonus_bag = []
@@ -618,14 +688,16 @@ class Tetris:
     def lock(self):
         self.stats["locks"] += 1
         # 一番上まで積み上がってもゲームオーバーにはせず、topped_out で知らせる
+        placed = []                     # いま置いたブロックの番号
         for x, y in self.current.blocks():
             if y < 0:
                 self.topped_out = True
                 return
             self.board[y][x] = self.current.kind
             self.ids[y][x] = self.new_id()
+            placed.append(self.ids[y][x])
         self.clear_lines()
-        self.check_crosses()
+        self.check_crosses(placed)
         self.current = self.spawn()
         self.can_hold = True
         self.fall_timer = 0
@@ -651,9 +723,15 @@ class Tetris:
             self.level = self.lines // 10 + 1
             self.events.append({"type": "lines", "n": cleared, "bonus": bonus, "rows": rows})
 
-    def check_crosses(self):
-        """同じ動物が ＋ の形 (まん中と上下左右の5つ) にそろっていたら点数を入れる。
+    def check_crosses(self, placed=()):
+        """同じ動物が ＋ の形にそろっていたら点数を入れる。十字とみなすのは次の3つがそろったとき:
+            1. まん中と上下左右の5つが同じ動物
+            2. ななめの4マスには同じ動物がない
+               (同じ動物のかたまりの中にかくれた ＋ は、十字に見えないので数えない)
+            3. いま置いたブロック (placed) が十字の中に入っている
+               (ラインが消えて下がっただけで、たまたまできた ＋ は数えない)
         ブロックは消えずに残るが、同じ5つのブロックの十字で点が入るのは1回だけ"""
+        placed = set(placed)
         for y in range(1, ROWS - 1):
             for x in range(1, COLS - 1):
                 kind = self.board[y][x]
@@ -661,6 +739,11 @@ class Tetris:
                     continue
                 cells = [(x, y), (x, y - 1), (x, y + 1), (x - 1, y), (x + 1, y)]
                 if any(self.board[cy][cx] != kind for cx, cy in cells):
+                    continue
+                corners = [(x - 1, y - 1), (x + 1, y - 1), (x - 1, y + 1), (x + 1, y + 1)]
+                if any(self.board[cy][cx] == kind for cx, cy in corners):
+                    continue
+                if not placed & {self.ids[cy][cx] for cx, cy in cells}:
                     continue
                 key = frozenset(self.ids[cy][cx] for cx, cy in cells)
                 if key in self.scored_crosses:
@@ -691,18 +774,18 @@ class Tetris:
 
 
 class Controls:
-    """ゲーム中のキー操作。使うキーは ←→↓↑ と SPACE だけ。
-        ← →   : いどう (押しっぱなしで続けて動く)
-        ↓     : はやく落とす (押しっぱなしで続けて落ちる)
-        ↓↓    : すばやく2回押すと一気に落とす (ハードドロップ)
-        ↑     : かいてん
-        SPACE : ホールド
+    """ゲーム中のキー操作 (どのキーが何をするかは KEY_ACTIONS で決めている)。
+        ← → / A D   : いどう (押しっぱなしで続けて動く)
+        ↓ / S       : はやく落とす (押しっぱなしで続けて落ちる)
+        ↓↓ / SS     : すばやく2回押すと一気に落とす (ハードドロップ)
+        ↑ / W X     : かいてん
+        SPACE / C   : ホールド
     pygame のキーリピートは使わず、自分で押しっぱなしを数えている。
     そうしないと「↓の押しっぱなし」と「↓をすばやく2回」の区別がつかないため"""
 
     def __init__(self):
-        self.held = {}          # 押しっぱなしのキー: つぎに動くまでの時間
-        self.down_taps = []     # ↓ を押した時刻 (すばやく押したかを調べる)
+        self.held = {}          # 押しっぱなしの操作 ("left" など): つぎに動くまでの時間
+        self.down_taps = []     # ↓ (S) を押した時刻 (すばやく押したかを調べる)
         self.now = 0            # ゲームの中の時計 (ミリ秒)
 
     def reset(self):
@@ -712,41 +795,42 @@ class Controls:
     def press(self, game, key):
         if game.topped_out:
             return
-        if key == pygame.K_DOWN:
+        action = KEY_ACTIONS.get(key)
+        if action == "down":
             self.down_taps = [t for t in self.down_taps if self.now - t <= TAP_WINDOW_MS]
             self.down_taps.append(self.now)
             if len(self.down_taps) >= HARD_DROP_TAPS:
                 self.down_taps.clear()
-                self.held.pop(pygame.K_DOWN, None)  # 一気に落としたら押しっぱなしの続きは止める
+                self.held.pop("down", None)     # 一気に落としたら押しっぱなしの続きは止める
                 game.hard_drop()
                 return
             game.soft_drop()
-            self.held[key] = REPEAT_DELAY_MS
-        elif key in (pygame.K_LEFT, pygame.K_RIGHT):
-            game.shift(-1 if key == pygame.K_LEFT else 1)
-            self.held[key] = REPEAT_DELAY_MS
-            self.held.pop(pygame.K_RIGHT if key == pygame.K_LEFT else pygame.K_LEFT, None)
-        elif key == pygame.K_UP:
+            self.held["down"] = REPEAT_DELAY_MS
+        elif action in ("left", "right"):
+            game.shift(-1 if action == "left" else 1)
+            self.held[action] = REPEAT_DELAY_MS
+            self.held.pop("right" if action == "left" else "left", None)
+        elif action == "rotate":
             game.rotate(clockwise=True)
-        elif key == pygame.K_SPACE:
+        elif action == "hold":
             game.hold_piece()
 
     def release(self, key):
-        self.held.pop(key, None)
+        self.held.pop(KEY_ACTIONS.get(key), None)
 
     def update(self, game, dt):
         """押しっぱなしのキーをくり返す"""
         self.now += dt
-        for key in list(self.held):
-            t = self.held[key] - dt
-            while t <= 0 and key in self.held and not game.topped_out:
-                if key == pygame.K_DOWN:
+        for action in list(self.held):
+            t = self.held[action] - dt
+            while t <= 0 and action in self.held and not game.topped_out:
+                if action == "down":
                     game.soft_drop()
                 else:
-                    game.shift(-1 if key == pygame.K_LEFT else 1)
+                    game.shift(-1 if action == "left" else 1)
                 t += REPEAT_RATE_MS
-            if key in self.held:
-                self.held[key] = t
+            if action in self.held:
+                self.held[action] = t
 
 
 # ================= 落ちてくるアイテム =================
@@ -771,11 +855,18 @@ class Items:
         # weights: {しゅるい: 出やすさ}。指定がなければとくしゅアイテム
         self.weights = weights or {k: v["weight"] for k, v in ITEM_TYPES.items()}
         self.max_falling = max_falling      # 同時に落ちてくる数の上限
+        self.blocked = set()                # いまは出さないもの (鬼レベルのボーナスのあとの虹色など)
+        self.force = None                   # つぎにかならず出すもの (鬼レベルの虹色)
 
     def pick(self):
         if self.choices is not None:
             return random.choice(self.choices) if self.choices else None
-        kinds = list(self.weights)
+        if self.force:
+            kind, self.force = self.force, None
+            return kind
+        kinds = [k for k in self.weights if k not in self.blocked]
+        if not kinds:
+            return None
         return random.choices(kinds, [self.weights[k] for k in kinds])[0]
 
     def update(self, dt, game, others=()):
@@ -948,6 +1039,8 @@ class Ranking:
 
 # 名前入力のボタン (名前はキーボードで打つ)
 NAME_BUTTONS = ["けす", "けってい"]
+# 名前の欄の場所 (日本語入力の変換の候補もこの近くに出る)
+NAME_BOX = pygame.Rect(WIDTH // 2 - 170, 258, 340, 60)
 
 
 # ================= 効果音・BGM =================
@@ -1181,12 +1274,23 @@ def rainbow_color(t_ms, offset=0, sat=85, val=100):
 def draw_item(surf, kind, cx, top, px, t_ms=0):
     """アイテムのキャラクターを描く (cx は横のまん中、top は上の端)"""
     left = cx - len(ITEM_ART[0]) * px / 2
-    if kind == "rainbow":       # 1段ずつ色を変えて虹色にする
-        for r, row in enumerate(ITEM_ART):
-            pal = {**PALETTE, "B": rainbow_color(t_ms, r * 30)}
-            draw_pixel_art(surf, [row], pal, left, top + r * px, px)
+    if kind == "rainbow":       # ボーナスタイムはロボットのキャラクター
+        draw_bonus_chara(surf, cx, top, px)
     else:
         draw_pixel_art(surf, ITEM_ART, {**PALETTE, "B": ITEM_TYPES[kind]["color"]}, left, top, px)
+
+
+def draw_bonus_chara(surf, cx, top, px):
+    """ボーナスタイムのロボットを、ほかのアイテムと同じ大きさ (12ドット分の四角) に描く。
+    assets/bonus_chara.png があれば画像、なければドット絵"""
+    size = len(ITEM_ART) * px
+    # 画像は手足が横に広くて小さいと見づらいので、ほかのアイテムより少し大きめにする
+    img = fit_image(BONUS_CHARA_FILE, int(size * 1.4), int(size * 1.4))
+    if img:
+        # 上の端をそろえる (頭の上の「ボーナス」の文字に目がかくれないように)
+        surf.blit(img, img.get_rect(midtop=(int(cx), int(top))))
+    else:
+        draw_pixel_art(surf, ROBOT_ART, ROBOT_PALETTE, cx - len(ROBOT_ART[0]) * px / 2, top, px)
 
 
 def draw_bomb(surf, cx, top, px, t_ms=0, armed=True):
@@ -1242,29 +1346,31 @@ def wrap_text(font, text, width):
 TUTORIAL_STEPS = [
     {
         "title": "いどう",
-        "text": "← → キーでブロックを左右に動かせるよ。\n\n左と右、両方に動かしてみよう！",
+        "text": "← → キーでブロックを左右に動かせるよ。A・D キーでもOK。\n\n左と右、両方に動かしてみよう！",
         "check": lambda d: d["left"] >= 1 and d["right"] >= 1,
     },
     {
         "title": "かいてん",
-        "text": "↑ キーでブロックが回るよ。\n\n↑ を2回押してみよう！",
+        "text": "↑ キーでブロックが回るよ。W・X キーでもOK。\n\n↑ を2回押してみよう！",
         "check": lambda d: d["cw"] >= 2,
     },
     {
         "title": "はやく落とす",
-        "text": "↓ キーを押しっぱなしにすると、ブロックがはやく落ちるよ。\n\n↓ を押しっぱなしにしてみよう！",
+        "text": "↓ キーを押しっぱなしにすると、ブロックがはやく落ちるよ。S キーでもOK。\n\n"
+                "↓ を押しっぱなしにしてみよう！",
         "check": lambda d: d["soft"] >= 6,
     },
     {
         "title": "一気に落とす",
-        "text": f"↓ キーをすばやく{HARD_DROP_TAPS}回押すと、一気に下まで落ちるよ。\n"
+        "text": f"↓ キーをすばやく{HARD_DROP_TAPS}回押すと、一気に下まで落ちるよ。"
+                f"S キー{HARD_DROP_TAPS}回でもOK。\n"
                 "点線の枠が落ちる場所の目印。\n\nやってみよう！",
         "check": lambda d: d["hard"] >= 1,
     },
     {
         "title": "ホールド",
-        "text": "SPACE キーで今のブロックを右の HOLD にとっておけるよ。\n"
-                "もう一度 SPACE で入れかえられるよ。\n\nSPACE を押してみよう！",
+        "text": "SPACE キーで今のブロックを右の HOLD にとっておけるよ。C キーでもOK。\n"
+                "もう一度押すと入れかえられるよ。\n\nSPACE を押してみよう！",
         "check": lambda d: d["hold"] >= 1,
     },
     {
@@ -1285,7 +1391,7 @@ TUTORIAL_STEPS = [
     {
         "title": "十字そろい",
         "text": f"同じ動物が ＋ の形（まん中と上下左右）にそろうと {CROSS_SCORE}点！"
-                "ブロックは消えずに残るよ。\n\n"
+                "ななめにも同じ動物があると十字にならないよ。\n\n"
                 "ねこブロックを ↓↓ で落として、十字を作ろう！",
         "check": lambda d: d["crosses"] >= 1,
         "setup": "cross",
@@ -1368,6 +1474,13 @@ class App:
         self.sparkle_timer = 0
         self.bgm_delay = 0      # ファンファーレのあと BGM を始めるまでの時間
         self.collapses = 0      # くずれた回数 (チュートリアルの確認用)
+        self.bonus_cool_ms = 0  # 鬼レベル: つぎのボーナス (虹色) が落ちてくるようになるまでの時間
+        self.rainbow_at = None
+        self.rainbow_sent = False
+        self.hits = []          # マウスでクリックできる場所 (毎回、描くときに登録しなおす)
+        self.mouse_pos = None   # マウスの場所 (まだ動かしていなければ None)
+        self.hand = False       # マウスの形が「指」になっているか
+        self.web_name = None    # ブラウザ版の名前入力らん (パソコン版では使わない)
         self.go_title()
 
     # ---------- メインループ ----------
@@ -1394,8 +1507,14 @@ class App:
                     getattr(self, "key_" + self.state)(event.key)
                 if event.type == pygame.KEYUP:
                     self.controls.release(event.key)
+                if event.type == pygame.MOUSEMOTION:
+                    self.mouse_move(event.pos)
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    self.mouse_click(event.pos)
             getattr(self, "update_" + self.state)(dt)
+            self.hits = []          # クリックできる場所は、描くときに登録しなおす
             getattr(self, "draw_" + self.state)()
+            self.update_cursor()
             pygame.display.flip()
 
     def quit(self):
@@ -1416,7 +1535,7 @@ class App:
         """名前入力のときだけ、キーボードの文字入力 (日本語入力も) を使えるようにする"""
         try:
             pygame.key.start_text_input()
-            pygame.key.set_text_input_rect(pygame.Rect(WIDTH // 2 - 150, 96, 300, 48))
+            pygame.key.set_text_input_rect(NAME_BOX)     # 変換の候補を名前の欄の近くに出す
             self.ime_on = True
         except (pygame.error, AttributeError):
             self.ime_on = False
@@ -1430,6 +1549,89 @@ class App:
             pygame.key.stop_text_input()
         except pygame.error:
             pass
+
+    # ---------- マウス ----------
+    def hit(self, rect, action, hover=None):
+        """クリックできる場所を登録する。
+        action: クリックしたときにすること  hover: マウスがのったときにすること"""
+        self.hits.append((pygame.Rect(rect), action, hover))
+
+    def hit_at(self, pos):
+        """pos にあるクリックできる場所 (あとから描いたもの = 上にあるものを優先)"""
+        for rect, action, hover in reversed(self.hits):
+            if rect.collidepoint(pos):
+                return action, hover
+        return None
+
+    def mouse_move(self, pos):
+        self.mouse_pos = pos
+        found = self.hit_at(pos)
+        if found and found[1]:
+            found[1]()          # メニューならカーソルをそこに合わせる
+
+    def mouse_click(self, pos):
+        self.mouse_pos = pos
+        found = self.hit_at(pos)
+        if found:
+            self.hits = []      # 画面が切りかわるので、同じ瞬間の2回目のクリックは無視する
+            if found[1]:
+                found[1]()
+            found[0]()
+
+    def mouse_over(self, rect):
+        return self.mouse_pos is not None and pygame.Rect(rect).collidepoint(self.mouse_pos)
+
+    def update_cursor(self):
+        """クリックできる場所の上では、マウスの形を「指」にする"""
+        on = self.mouse_pos is not None and self.hit_at(self.mouse_pos) is not None
+        if on == self.hand:
+            return
+        self.hand = on
+        try:
+            pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_HAND if on else pygame.SYSTEM_CURSOR_ARROW)
+        except (pygame.error, AttributeError):
+            pass
+
+    def menu_item(self, rect, attr, i, key_func):
+        """メニューの1行をマウスでもえらべるようにする。
+        マウスがのる → カーソル (attr) が i になる。クリック → ENTER を押したのと同じ"""
+        def hover():
+            setattr(self, attr, i)
+
+        def click():
+            setattr(self, attr, i)
+            key_func(pygame.K_RETURN)
+        self.hit(rect, click, hover)
+
+    def button(self, label, rect, action, color=GOOD, font=None):
+        """クリックできるボタン (キーでも押せるボタンは、ラベルにキーの名前を書いておく)"""
+        rect = pygame.Rect(rect)
+        over = self.mouse_over(rect)
+        pygame.draw.rect(self.screen, (58, 58, 82) if over else (36, 36, 54), rect, border_radius=10)
+        pygame.draw.rect(self.screen, ACCENT if over else color, rect, 3 if over else 2, border_radius=10)
+        self.text(font or self.f, label, color, rect.center, center=True)
+        self.hit(rect, action)
+        return rect
+
+    def link(self, font, s, color, pos, action, center=False):
+        """クリックできる文字 (マウスがのると下線が出る)"""
+        r = self.text(font, s, color, pos, center=center)
+        area = r.inflate(16, 8)
+        if self.mouse_over(area):
+            pygame.draw.line(self.screen, color, (r.left, r.bottom), (r.right, r.bottom), 2)
+        self.hit(area, action)
+        return r
+
+    def back_button(self, action):
+        """左上の「もどる」ボタン"""
+        self.button("◀ もどる", (6, 6, 86, 30), action, color=SUB, font=self.f_small)
+
+    def can_show(self, ch):
+        """この文字をゲームの文字 (フォント) で表示できるか。絵文字などは名前に入れない"""
+        try:
+            return self.f_mid.metrics(ch)[0] is not None
+        except (pygame.error, IndexError, TypeError):
+            return True
 
     # ---------- 共通の描画 ----------
     def text(self, font, s, color, pos, center=False, shadow=False):
@@ -1676,7 +1878,8 @@ class App:
             text, sound = f"+{ITEM_SCORE}点", "score"
         elif kind == "rainbow":
             if not demo:
-                g.start_bonus(BONUS_MS)     # ボーナス中にもう一度取ったら1分にもどる
+                # ボーナス中にもう一度取ったら長さがもとにもどる (鬼レベルは30秒)
+                g.start_bonus(DIFFICULTY[self.difficulty].get("bonus_ms", BONUS_MS))
                 self.bgm_delay = 900        # ファンファーレのあとに BGM
                 self.clear_bombs(None)      # ボーナス中は爆弾なし (落ちていた爆弾は虹色に消える)
             text, sound = "ボーナスタイム！", "rainbow"
@@ -1725,6 +1928,27 @@ class App:
         caught = []
         if self.bomb_stop_ms > 0:           # ばくだんストップ中は爆弾が出ない
             self.bomb_stop_ms = max(0, self.bomb_stop_ms - dt)
+        # レベル2〜4: ボーナス中と、ボーナスがおわってしばらく (ランダム) は、虹色 (ボーナス) が落ちてこない
+        self.bonus_cool_ms = max(0, self.bonus_cool_ms - dt)
+        if self.items and not demo:
+            d = DIFFICULTY[self.difficulty]
+            g = self.game
+            # ボーナス中は、どのレベルでも虹色 (ボーナス) は落ちてこない。
+            # レベル2〜4 は、ボーナスがおわってからもしばらく (bonus_cooldown) 落ちてこない
+            resting = g.bonus_ms > 0 or (d.get("bonus_cooldown") and self.bonus_cool_ms > 0)
+            after = d.get("bonus_after")
+            too_early = after and g.time_left is not None and g.time_left > after
+            self.items.blocked = {"rainbow"} if resting or too_early else set()
+            if g.bonus_ms > 0:              # ボーナス中は爆弾が出ないので、ばくだんストップ (緑) も出さない
+                self.items.blocked.add("green")
+            # 鬼レベル: のこり時間が bonus_after を切ったら、ランダムなときに1回かならず虹色を落とす
+            if after and not too_early:
+                if self.rainbow_at is None:     # のこり何秒のときに落とすか、ここで決める
+                    self.rainbow_at = random.randint(20 * 1000, after - 5 * 1000)
+                if not self.rainbow_sent and not resting and g.time_left <= self.rainbow_at:
+                    self.rainbow_sent = True
+                    self.items.force = "rainbow"
+                    self.items.timer = min(self.items.timer, 0)     # すぐに出す
         groups = [grp for grp in (self.items, self.bombs) if grp]
         for group in groups:
             # ばくだんストップ中とボーナスタイム中は爆弾が出ない (つぎの爆弾までの時間も止まる)
@@ -1941,9 +2165,10 @@ class App:
 
         for i, label in enumerate(self.MENU):
             y = 362 + i * 44
+            rect = pygame.Rect(0, 0, 380, 42)
+            rect.center = (cx, y)
+            self.menu_item(rect, "menu_index", i, self.key_title)     # マウスでもえらべる
             if i == self.menu_index:
-                rect = pygame.Rect(0, 0, 380, 42)
-                rect.center = (cx, y)
                 pygame.draw.rect(self.screen, (60, 55, 30), rect, border_radius=10)
                 pygame.draw.rect(self.screen, ACCENT, rect, 2, border_radius=10)
                 self.text(self.f_mid, label, ACCENT, (cx, y), center=True)
@@ -1954,7 +2179,8 @@ class App:
         if any(best.values()):
             scores = "   ".join(f"レベル{lv} {v}" for lv, v in best.items())
             self.text(self.f_small, f"ハイスコア   {scores}", TEXT, (cx, 540), center=True)
-        self.text_with_enter(self.f_small, "↑↓ でえらぶ ／ ENTER", " で決定", SUB, (cx, 570))
+        self.text_with_enter(self.f_small, "↑↓ でえらぶ ／ ENTER", " で決定 ／ クリックでもOK", SUB,
+                             (cx, 570))
 
     # ==================================================
     # レベルえらび画面
@@ -2003,6 +2229,7 @@ class App:
         for i, (lv, d) in enumerate(DIFFICULTY.items()):
             rect = pygame.Rect(0, 0, 450, 100)
             rect.center = (cx, 140 + i * 110)
+            self.menu_item(rect, "level_index", i, self.key_level)    # マウスでもえらべる
             chosen = i == self.level_index
             locked = lv not in open_levels
             color = (110, 110, 125) if locked else d["color"]
@@ -2031,6 +2258,7 @@ class App:
                       (cx, 556), center=True, shadow=True)
         self.text_with_enter(self.f_small, "↑↓ でえらぶ ／ ENTER", " で決定 ／ ESC でもどる", SUB,
                              (cx, 582))
+        self.back_button(self.go_title)
 
     # ==================================================
     # スタート画面 (ルール説明 → 3,2,1 カウントダウン)
@@ -2038,7 +2266,8 @@ class App:
     def go_ready(self, skip_info=False):
         self.state = "ready"
         d = DIFFICULTY[self.difficulty]
-        self.game = Tetris(time_limit=TIME_LIMIT_MS, time_scale=d.get("time_scale", 1.0))
+        self.game = Tetris(time_limit=TIME_LIMIT_MS, time_scale=d.get("time_scale", 1.0),
+                           bonus_small=d.get("bonus_small", True))
         self.collapse = None
         self.effects = []
         # ばくだんストップ (green) は爆弾が出るレベルだけ
@@ -2053,6 +2282,9 @@ class App:
             self.bombs = None
         self.bomb_hits = 0
         self.bombs_dodged = 0
+        self.bonus_cool_ms = 0
+        self.rainbow_at = None      # 鬼レベル: 虹色を落とす「のこり時間」(のこり1分を切ったら決める)
+        self.rainbow_sent = False   # 鬼レベル: もう虹色を落としたか
         self.time_call = None       # 「あと1分」などの知らせ (表示中のとき)
         self.reset_play_effects()
         self.ready_phase = "count" if skip_info else "info"
@@ -2100,8 +2332,10 @@ class App:
             if d["bomb_max"]:
                 self.text(self.f_small, "ばくだんは、動かしているブロックにあたると減点！", WARN,
                           (cx, cy + 112), center=True)
-            self.text(self.f_mid, "SPACE でスタート", ACCENT, (cx, cy + 150), center=True)
-            self.text(self.f_small, "ESC でレベルえらびにもどる", SUB, (cx, cy + 185), center=True)
+            self.button("SPACE でスタート", (cx - 130, cy + 128, 260, 44),
+                        lambda: self.key_ready(pygame.K_SPACE), color=ACCENT, font=self.f_mid)
+            self.link(self.f_small, "ESC でレベルえらびにもどる", SUB, (cx, cy + 192),
+                      lambda: self.key_ready(pygame.K_ESCAPE), center=True)
         else:
             if self.count_ms > 0:
                 n = str(int(self.count_ms // 1000) + 1)
@@ -2119,10 +2353,17 @@ class App:
         elif self.collapse is not None:     # くずれている間は操作できない
             return
         elif key == pygame.K_p:
-            g.paused = not g.paused
-            self.sound.pause_bgm(g.paused)
+            self.toggle_pause()
         elif not g.paused:
             self.controls.press(g, key)
+
+    def toggle_pause(self):
+        """一時停止 / さいかい (P キーでも、マウスでも)"""
+        g = self.game
+        if self.collapse is not None or g.finished:   # くずれている間は止められない
+            return
+        g.paused = not g.paused
+        self.sound.pause_bgm(g.paused)
 
     def update_play(self, dt):
         if self.update_collapse(dt):        # くずれている間は時間も止まる
@@ -2145,6 +2386,9 @@ class App:
             self.sound.stop_bgm()
             self.sound.play("bonus_end")
             self.add_popup("ボーナスおわり", TEXT, BOARD_W // 2, HEIGHT // 2)
+            # レベル2〜4: しばらくはつぎのボーナスが落ちてこない
+            cool = DIFFICULTY[self.difficulty].get("bonus_cooldown")
+            self.bonus_cool_ms = random.randint(*cool) if cool else 0     # 何秒休むかはランダム
         if g.topped_out:
             self.start_collapse()
             return
@@ -2235,12 +2479,16 @@ class App:
         elif bonus:
             msg = "ボーナス中は ばくだんなし！" if self.bombs else "ボーナス中は小さいブロック！"
             self.text(self.f_small, msg, rainbow_color(now), (px, 368))
+        elif self.bonus_cool_ms > 0 and self.state == "play":
+            self.text(self.f_small, "ボーナスは おやすみ中", SUB, (px, 368))
+        elif DIFFICULTY[self.difficulty].get("bonus_after") and t > DIFFICULTY[self.difficulty]["bonus_after"]:
+            self.text(self.f_small, "ボーナスは のこり1分から！", SUB, (px, 368))
 
-        helps = ["← → ：いどう", "↑ ：かいてん", "↓ ：はやく落とす",
-                 "↓" * HARD_DROP_TAPS + " ：一気に落とす",
-                 "SPACE ：ホールド", "P ：一時停止", "ESC ：タイトルへ"]
-        for i, s in enumerate(helps):
-            self.text(self.f_small, s, SUB, (px, 400 + i * 26))
+        for i, s in enumerate(HELP_LINES):
+            if s.startswith("P ") and self.state == "play":     # 「一時停止」はクリックでもできる
+                self.link(self.f_small, s, SUB, (px, 400 + i * 26), self.toggle_pause)
+            else:
+                self.text(self.f_small, s, SUB, (px, 400 + i * 26))
 
     def draw_play(self):
         self.draw_board(self.game, show_piece=self.collapse is None)
@@ -2253,8 +2501,11 @@ class App:
         self.draw_collapse()
         if self.game.paused:
             self.dim(160, pygame.Rect(0, 0, BOARD_W, HEIGHT))
-            self.text(self.f_big, "一時停止", TEXT, (BOARD_W // 2, HEIGHT // 2 - 20), center=True)
-            self.text(self.f, "P でさいかい", SUB, (BOARD_W // 2, HEIGHT // 2 + 30), center=True)
+            self.text(self.f_big, "一時停止", TEXT, (BOARD_W // 2, HEIGHT // 2 - 60), center=True)
+            self.button("さいかい（P）", (BOARD_W // 2 - 110, HEIGHT // 2, 220, 44),
+                        self.toggle_pause, font=self.f_mid)
+            self.button("タイトルへ（ESC）", (BOARD_W // 2 - 110, HEIGHT // 2 + 58, 220, 40),
+                        self.go_title, color=SUB)
 
     # ==================================================
     # 結果
@@ -2319,11 +2570,13 @@ class App:
             self.text(self.f, "鬼レベルが あそべるようになった！", DIFFICULTY[4]["color"]
                       if (t // 300) % 2 else TEXT, (cx, cy + 67), center=True)
 
+        space = lambda: self.key_result(pygame.K_SPACE)
         if self.rank_place:
-            self.text(self.f, "SPACE ：名前を入れる", GOOD, (cx, cy + 120), center=True)
+            self.button("SPACE ：名前を入れる", (cx - 140, cy + 100, 280, 42), space)
         else:
-            self.text(self.f, "SPACE ：ランキングを見る", GOOD, (cx, cy + 120), center=True)
-            self.text(self.f, "ESC ：タイトルにもどる", SUB, (cx, cy + 155), center=True)
+            self.button("SPACE ：ランキングを見る", (cx - 140, cy + 100, 280, 42), space)
+            self.button("ESC ：タイトルにもどる", (cx - 140, cy + 150, 280, 38),
+                        lambda: self.key_result(pygame.K_ESCAPE), color=SUB)
 
     # ==================================================
     # 名前入力 (ランクインしたとき)
@@ -2340,7 +2593,7 @@ class App:
         """キーボードで打った文字 (日本語入力で決まった文字もここに来る)"""
         self.ime_text = ""
         self.last_text_ms = pygame.time.get_ticks()
-        text = "".join(c for c in text if c.isprintable() and not c.isspace())
+        text = "".join(c for c in text if c.isprintable() and not c.isspace() and self.can_show(c))
         if not text:
             return
         room = NAME_MAX - len(self.name)
@@ -2355,11 +2608,27 @@ class App:
         if len(self.name) >= NAME_MAX:
             self.sound.play("buzz")
             return
-        self.name += ch
+        self.set_name(self.name + ch)
         self.sound.play("click")
+
+    def set_name(self, s):
+        """名前を書きかえる (ブラウザ版は入力らんの文字も同じにする)"""
+        self.name = s
+        if self.web_name:
+            self.web_name.set_value(s)
+
+    def name_button(self):
+        """えらんでいるボタン (けす / けってい) を押す"""
+        if NAME_BUTTONS[self.name_btn] == "けす":
+            self.set_name(self.name[:-1])
+            self.sound.play("click")
+        else:
+            self.name_done()
 
     def name_done(self):
         self.stop_ime()
+        if self.web_name:
+            self.web_name.hide()
         self.ime_text = ""
         name = self.name.strip() or "ななし"
         rank = self.ranking.add(self.difficulty, name, self.game.score)
@@ -2376,13 +2645,9 @@ class App:
         if key in (pygame.K_LEFT, pygame.K_RIGHT):      # 「けす」と「けってい」を切りかえ
             self.name_btn = 1 - self.name_btn
         elif key == pygame.K_RETURN:
-            if NAME_BUTTONS[self.name_btn] == "けす":
-                self.name = self.name[:-1]
-                self.sound.play("click")
-            else:
-                self.name_done()
+            self.name_button()
         elif key == pygame.K_BACKSPACE:
-            self.name = self.name[:-1]
+            self.set_name(self.name[:-1])
         elif key == pygame.K_ESCAPE:
             self.name_done()
         elif not getattr(self, "ime_on", False):
@@ -2393,7 +2658,26 @@ class App:
                 self.name_add(chr(key))
 
     def update_name(self, dt):
-        pass
+        if self.web_name:           # ブラウザ版: ブラウザの入力らんに打った文字を読む
+            self.update_web_name()
+
+    def update_web_name(self):
+        w = self.web_name
+        w.show(NAME_BOX)            # 名前の欄の上に入力らんを重ねる (ブラウザの大きさが変わっても合わせる)
+        if w.composing():           # 変換している途中はさわらない
+            return
+        raw = w.value()
+        clean = "".join(c for c in raw if c.isprintable() and not c.isspace() and self.can_show(c))
+        clean = clean[:NAME_MAX]
+        if clean != raw:            # 長すぎる・使えない文字は入れない
+            w.set_value(clean)
+            self.sound.play("buzz")
+        if clean != self.name:
+            if len(clean) > len(self.name):
+                self.sound.play("click")
+            self.name = clean
+        if w.take_key("enter") or w.take_key("esc"):
+            self.name_done()
 
     def draw_name(self):
         self.screen.fill(BG)
@@ -2403,40 +2687,44 @@ class App:
         self.text(self.f_big, f"ランクイン！ {self.rank_place}位", ACCENT, (cx, 120), center=True, shadow=True)
         self.text(self.f, f"レベル{self.difficulty} {d['name']}   スコア {self.game.score}", d["color"],
                   (cx, 168), center=True)
-        self.text(self.f, "名前をキーボードで入れてね", TEXT, (cx, 232), center=True)
+        self.text(self.f, "名前を入れてね（ひらがな・カタカナ・漢字もOK）", TEXT, (cx, 232), center=True)
         # 名前の欄
-        box = pygame.Rect(cx - 170, 258, 340, 60)
+        box = NAME_BOX
         pygame.draw.rect(self.screen, (30, 30, 48), box, border_radius=12)
         pygame.draw.rect(self.screen, ACCENT, box, 3, border_radius=12)
-        # 決まった文字 + 変換中の文字 (下線つき) + カーソル
-        done = self.f_mid.render(self.name, True, TEXT)
-        editing = self.f_mid.render(self.ime_text, True, ACCENT)
-        cursor = "＿" if (t // 400) % 2 == 0 and len(self.name) < NAME_MAX and not self.ime_text else ""
-        cur = self.f_mid.render(cursor, True, TEXT)
-        w = done.get_width() + editing.get_width() + cur.get_width()
-        x = box.centerx - w // 2
-        y = box.centery - done.get_height() // 2
-        self.screen.blit(done, (x, y))
-        x += done.get_width()
-        if self.ime_text:
-            self.screen.blit(editing, (x, y))
-            pygame.draw.line(self.screen, ACCENT, (x, y + editing.get_height() - 4),
-                             (x + editing.get_width(), y + editing.get_height() - 4), 2)
-            x += editing.get_width()
-        self.screen.blit(cur, (x, y))
+        # ブラウザ版は、上に重ねたブラウザの入力らんが文字を見せるので、ここでは描かない
+        if not self.web_name:
+            # 決まった文字 + 変換中の文字 (下線つき) + カーソル
+            done = self.f_mid.render(self.name, True, TEXT)
+            editing = self.f_mid.render(self.ime_text, True, ACCENT)
+            cursor = "＿" if (t // 400) % 2 == 0 and len(self.name) < NAME_MAX and not self.ime_text else ""
+            cur = self.f_mid.render(cursor, True, TEXT)
+            w = done.get_width() + editing.get_width() + cur.get_width()
+            x = box.centerx - w // 2
+            y = box.centery - done.get_height() // 2
+            self.screen.blit(done, (x, y))
+            x += done.get_width()
+            if self.ime_text:
+                self.screen.blit(editing, (x, y))
+                pygame.draw.line(self.screen, ACCENT, (x, y + editing.get_height() - 4),
+                                 (x + editing.get_width(), y + editing.get_height() - 4), 2)
+                x += editing.get_width()
+            self.screen.blit(cur, (x, y))
         self.text(self.f_small, f"{len(self.name)}/{NAME_MAX}", SUB, (box.right + 8, box.centery - 10))
 
         # けす / けってい
         for i, label in enumerate(NAME_BUTTONS):
             r = pygame.Rect(0, 0, 150, 46)
             r.center = (cx - 90 + i * 180, 372)
+            self.menu_item(r, "name_btn", i, lambda _key: self.name_button())   # クリックでも押せる
             sel = self.name_btn == i
             base = GOOD if label == "けってい" else SUB
             pygame.draw.rect(self.screen, (40, 60, 40) if label == "けってい" else (40, 40, 55), r,
                              border_radius=10)
             pygame.draw.rect(self.screen, ACCENT if sel else base, r, 3 if sel else 2, border_radius=10)
             self.text(self.f_mid, label, base, r.center, center=True)
-        self.text_with_enter(self.f_small, "← → でえらぶ ／ ENTER", " で決定", SUB, (cx, 560))
+        self.text_with_enter(self.f_small, "← → でえらぶ ／ ENTER", " で決定 ／ クリックでもOK", SUB,
+                             (cx, 560))
 
     # ==================================================
     # データリセット (保存してあるデータをけす)
@@ -2485,6 +2773,11 @@ class App:
         elif key == pygame.K_ESCAPE:
             self.go_title()
 
+    def reset_answer(self, yes):
+        """「ほんとうに？」で はい / いいえ をクリックしたとき"""
+        self.reset_yes = yes
+        self.key_reset(pygame.K_RETURN)
+
     def update_reset(self, dt):
         self.update_title(dt)
         self.reset_msg_ms = max(0, self.reset_msg_ms - dt)
@@ -2502,6 +2795,7 @@ class App:
         for i, (label, desc, _) in enumerate(self.RESET_MENU):
             r = pygame.Rect(0, 0, 460, 78)
             r.center = (cx, 160 + i * 92)
+            self.menu_item(r, "reset_index", i, self.key_reset)       # マウスでもえらべる
             sel = i == self.reset_index
             pygame.draw.rect(self.screen, (60, 40, 40) if sel and i < 3 else
                              (45, 42, 30) if sel else (30, 30, 48), r, border_radius=12)
@@ -2514,6 +2808,7 @@ class App:
         self.text_with_enter(self.f_small, "↑↓ でえらぶ ／ ENTER", " で決定 ／ ESC でもどる", SUB,
                              (cx, 582))
         if self.reset_confirm is not None:         # 「ほんとうに？」の小さい画面
+            self.hits = []      # 後ろのメニューはクリックできないようにする
             self.dim(150)
             box = pygame.Rect(0, 0, 440, 210)
             box.center = (cx, HEIGHT // 2)
@@ -2524,6 +2819,8 @@ class App:
             for j, (label, yes) in enumerate((("はい", True), ("いいえ", False))):
                 b = pygame.Rect(0, 0, 150, 42)
                 b.center = (cx - 90 + j * 180, box.y + 166)
+                self.hit(b, lambda yes=yes: self.reset_answer(yes),
+                         lambda yes=yes: setattr(self, "reset_yes", yes))
                 sel = self.reset_yes == yes
                 pygame.draw.rect(self.screen, (70, 40, 40) if yes else (40, 40, 55), b, border_radius=10)
                 pygame.draw.rect(self.screen, ACCENT if sel else GRID, b, 3 if sel else 2, border_radius=10)
@@ -2573,6 +2870,7 @@ class App:
         for i, lv in enumerate(levels):
             d = DIFFICULTY[lv]
             r = pygame.Rect(x0 + i * tab_w + 3, 76, tab_w - 6, 34)
+            self.hit(r, lambda lv=lv: self.rank_tab(lv))             # タブをクリックで切りかえ
             on = lv == self.rank_level
             pygame.draw.rect(self.screen, d["color"] if on else (30, 30, 48), r, border_radius=8)
             label = f"{'Lv' if short else 'レベル'}{lv} {d['name']}"   # 1つでも入らなければ全部短く
@@ -2599,17 +2897,28 @@ class App:
                 score = self.f_mid.render(str(rows[i]["score"]), True, color)
                 self.screen.blit(score, score.get_rect(midright=(r.right - 16, r.centery)))
         # タブの左右に ◀ ▶ (← → で切りかえられることを見せる)
-        self.text(self.f_mid, "◀", SUB, (x0 - 14, 93), center=True)
-        self.text(self.f_mid, "▶", SUB, (x0 + tab_w * len(levels) + 14, 93), center=True)
-        if self.rank_after_game:
-            self.text(self.f_small, "← → でレベルをかえる", SUB, (cx, 540), center=True)
-            self.text(self.f, f"SPACE ：レベル{self.difficulty}でもう一度 ／ ESC ：タイトルへ", GOOD,
-                      (cx, 566), center=True)
+        self.link(self.f_mid, "◀", SUB, (x0 - 14, 93), lambda: self.key_ranking(pygame.K_LEFT), center=True)
+        self.link(self.f_mid, "▶", SUB, (x0 + tab_w * len(levels) + 14, 93),
+                  lambda: self.key_ranking(pygame.K_RIGHT), center=True)
+        if self.ranking_saved_ok():
+            self.text(self.f_small, "← → か タブのクリックで レベルをかえる", SUB, (cx, 538), center=True)
         else:
-            self.text(self.f_small, "← → でレベルをかえる ／ ESC でもどる", SUB, (cx, 548), center=True)
-        if not self.ranking_saved_ok():
-            self.text(self.f_small, "※ランキングをファイルに保存できませんでした", WARN, (cx, 578),
+            self.text(self.f_small, "※ランキングをファイルに保存できませんでした", WARN, (cx, 538),
                       center=True)
+        if self.rank_after_game:
+            self.button(f"SPACE ：レベル{self.difficulty}でもう一度", (cx - 262, 556, 280, 38),
+                        lambda: self.key_ranking(pygame.K_SPACE))
+            self.button("ESC ：タイトルへ", (cx + 28, 556, 234, 38),
+                        lambda: self.key_ranking(pygame.K_ESCAPE), color=SUB)
+        else:
+            self.button("ESC ：もどる", (cx - 100, 556, 200, 38),
+                        lambda: self.key_ranking(pygame.K_ESCAPE), color=SUB)
+
+    def rank_tab(self, lv):
+        """ランキングのタブをクリックしたとき"""
+        if lv != self.rank_level:
+            self.rank_level = lv
+            self.sound.play("click")
 
     def ranking_saved_ok(self):
         return os.access(os.path.dirname(self.ranking.path) or ".", os.W_OK)
@@ -2803,15 +3112,19 @@ class App:
             self.text(self.f, f"よけた  {done} / 3", TEXT, (px, below + 46))
 
         if last:
-            self.text(self.f, "SPACE ：ゲームスタート", GOOD, (px, HEIGHT - 80))
-            self.text(self.f, "ESC ：タイトルへ", SUB, (px, HEIGHT - 50))
+            self.link(self.f, "SPACE ：ゲームスタート", GOOD, (px, HEIGHT - 80),
+                      lambda: self.key_tutorial(pygame.K_SPACE))
+            self.link(self.f, "ESC ：タイトルへ", SUB, (px, HEIGHT - 50),
+                      lambda: self.key_tutorial(pygame.K_ESCAPE))
             # 盤面側にはまとめの絵 (画像があれば画像)
             self.dim(120, pygame.Rect(0, 0, BOARD_W, HEIGHT))
             draw_big_cat(self.screen, BOARD_W // 2, 170, 10)
             self.text(self.f_big, "がんばって！", ACCENT, (BOARD_W // 2, 360), center=True, shadow=True)
         else:
-            self.text(self.f_small, "ENTER ：この説明をとばす", SUB, (px, HEIGHT - 52))
-            self.text(self.f_small, "ESC ：タイトルへ", SUB, (px, HEIGHT - 28))
+            self.link(self.f_small, "ENTER ：この説明をとばす", SUB, (px, HEIGHT - 52),
+                      lambda: self.key_tutorial(pygame.K_RETURN))
+            self.link(self.f_small, "ESC ：タイトルへ", SUB, (px, HEIGHT - 28),
+                      lambda: self.key_tutorial(pygame.K_ESCAPE))
 
         if g.paused and not last:
             self.dim(160, pygame.Rect(0, 0, BOARD_W, HEIGHT))

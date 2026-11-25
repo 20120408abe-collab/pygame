@@ -2,50 +2,8 @@
  "levels": {
   "1": [],
   "2": [],
-  "3": [
-   {
-    "name": "ディディー",
-    "score": 9860
-   },
-   {
-    "name": "aaa",
-    "score": 3240
-   },
-   {
-    "name": "ななし",
-    "score": 2724
-   },
-   {
-    "name": "ドンキー",
-    "score": 1678
-   },
-   {
-    "name": "aaa",
-    "score": 1000
-   },
-   {
-    "name": "aaa",
-    "score": 544
-   }
-  ],
-  "4": [
-   {
-    "name": "ディクシー",
-    "score": 7754
-   },
-   {
-    "name": "aaaa",
-    "score": 4638
-   },
-   {
-    "name": "A",
-    "score": 1102
-   },
-   {
-    "name": "aaa",
-    "score": 1084
-   }
-  ]
+  "3": [],
+  "4": []
  },
- "oni_unlocked": true
+ "oni_unlocked": false
 }
