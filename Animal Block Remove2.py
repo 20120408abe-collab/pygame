@@ -3,7 +3,7 @@ Animal Block Remove (Python + pygame)
 
 実行方法:
     pip install pygame
-    python tetris.py
+    python "Animal Block Remove2.py"
 
 画面の流れ:
     タイトル → レベルえらび → スタート画面 → ゲーム(制限時間2分) → 結果
@@ -2177,8 +2177,10 @@ class App:
 
         best = {lv: v for lv, v in self.best.items() if lv in self.available_levels()}
         if any(best.values()):
-            scores = "   ".join(f"レベル{lv} {v}" for lv, v in best.items())
-            self.text(self.f_small, f"ハイスコア   {scores}", TEXT, (cx, 540), center=True)
+            line = "ハイスコア   " + "   ".join(f"レベル{lv} {v}" for lv, v in best.items())
+            if self.f_small.size(line)[0] > WIDTH - 40:     # 画面からはみ出すときは短く書く
+                line = "ハイスコア  " + "  ".join(f"Lv{lv} {v}" for lv, v in best.items())
+            self.text(self.f_small, line, TEXT, (cx, 540), center=True)
         self.text_with_enter(self.f_small, "↑↓ でえらぶ ／ ENTER", " で決定 ／ クリックでもOK", SUB,
                              (cx, 570))
 
